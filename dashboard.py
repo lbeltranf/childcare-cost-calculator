@@ -21,7 +21,7 @@ st.markdown("""
     html, body, [data-testid="stAppViewContainer"] {
         height: 100%;
         overflow: hidden !important;
-        zoom: 80%;
+        zoom: 100%;
     }
     header > div:first-child, .stDeployButton, .st-emotion-cache-1wbqy5l {
         display: none !important;
