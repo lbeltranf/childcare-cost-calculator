@@ -19,9 +19,9 @@ st.set_page_config(page_title="Public Policy Cost Dashboard", layout="wide")
 st.markdown("""
 <style>
     html, body, [data-testid="stAppViewContainer"] {
-        height: 100vh;
-        overflow-y: auto;
-        scroll-behavior: smooth;
+        height: 100%;
+        overflow: hidden !important;
+        zoom: 80%;
     }
     header > div:first-child, .stDeployButton, .st-emotion-cache-1wbqy5l {
         display: none !important;
