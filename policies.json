@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Increase Average Student Test Scores (NAEP scale)",
+    "domain_min": 250,
+    "domain_max": 300,
+    "step": 1,
+    "function": "1500000 * ((x - 250) ** 2)"
+  },
+  {
+    "name": "Reduce Adult Recidivism Rate (%)",
+    "domain_min": 10,
+    "domain_max": 40,
+    "step": 1,
+    "function": "3000000 * (40 - x) ** 1.5"
+  },
+  {
+    "name": "Expand Broadband Access (% of rural population)",
+    "domain_min": 50,
+    "domain_max": 100,
+    "step": 5,
+    "function": "5000000 * math.log1p(x - 50)"
+  },
+  {
+    "name": "Increase Vaccination Rate (% population)",
+    "domain_min": 70,
+    "domain_max": 95,
+    "step": 1,
+    "function": "2000000 * ((x - 70) ** 1.8)"
+  },
+  {
+    "name": "Improve Air Quality Index (AQI reduction)",
+    "domain_min": 0,
+    "domain_max": 30,
+    "step": 1,
+    "function": "1000000 * (x ** 2)"
+  }
+]
