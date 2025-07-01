@@ -21,7 +21,18 @@ st.markdown("""
     html, body, [data-testid="stAppViewContainer"] {
         height: 100%;
         overflow: hidden !important;
-        zoom: 80%;
+    }
+    @supports (-webkit-touch-callout: none) {
+        html, body, [data-testid="stAppViewContainer"] {
+            transform: scale(0.8);
+            transform-origin: top left;
+            width: 125%;
+        }
+    }
+    @supports not (-webkit-touch-callout: none) {
+        html, body, [data-testid="stAppViewContainer"] {
+            zoom: 80%;
+        }
     }
     @media not all and (min-resolution:.001dpcm) {
         @supports (-webkit-appearance:none) {
