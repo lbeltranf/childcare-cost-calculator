@@ -21,7 +21,7 @@ st.markdown("""
     html, body, [data-testid="stAppViewContainer"] {
         height: 100%;
         overflow: hidden !important;
-        transform: scale(0.8);
+        transform: scale(0.9);
         transform-origin: top left;
         width: 125%;  /* counteract the scale to fill width */
     }
