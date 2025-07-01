@@ -21,9 +21,18 @@ st.markdown("""
     html, body, [data-testid="stAppViewContainer"] {
         height: 100%;
         overflow: hidden !important;
-        transform: scale(0.8);
-        transform-origin: top left;
-        width: 125%;  /* counteract the scale to fill width */
+        zoom: 80%;
+    }
+    @media not all and (min-resolution:.001dpcm) {
+        @supports (-webkit-appearance:none) {
+            html, body, [data-testid="stAppViewContainer"] {
+                transform: scale(0.8);
+                transform-origin: top left;
+                width: 125%;
+            }
+        }
+    }}
+        zoom: 80%;
     }
     header > div:first-child, .stDeployButton, .st-emotion-cache-1wbqy5l {
         display: none !important;
