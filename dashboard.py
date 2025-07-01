@@ -22,7 +22,7 @@ st.markdown("""
     height: 100vh;
     width: 100vw;
     overflow: hidden !important;
-    transform: scale(1.3);
+    transform: scale(1.25);
     transform-origin: top left;
     padding: 0;
     margin: 0;
