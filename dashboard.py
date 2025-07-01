@@ -18,7 +18,17 @@ st.set_page_config(page_title="Public Policy Cost Dashboard", layout="wide")
 
 st.markdown("""
 <style>
-    /* Typography and Layout */
+    html, body, [data-testid="stAppViewContainer"] {
+        height: 100vh;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+    }
+    header > div:first-child, .stDeployButton, .st-emotion-cache-1wbqy5l {
+        display: none !important;
+    }
+    footer, .viewerBadge_link__qRIco, .stActionButton, [data-testid="stStatusWidget"] {
+        display: none !important;
+    }
     h1 {
         font-size: 40px !important;
         font-weight: 800 !important;
@@ -36,7 +46,7 @@ st.markdown("""
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
         text-align: center;
         position: relative;
-        top: 35px;  /* This shifts the box downward */
+        top: 35px;
     }
     .policy-title {
         font-size: 20px;
@@ -63,13 +73,13 @@ st.markdown("""
         border: 2px solid #ffcccc;
         text-align: center;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 40px;
     }
     .total-text {
         font-size: 32px;
         color: #a00000;
         font-weight: bold;
     }
-    /* Slider Customization */
     .stSlider > div[data-baseweb="slider"] {
         padding-top: 12px;
         padding-bottom: 12px;
