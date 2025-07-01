@@ -19,8 +19,8 @@ st.set_page_config(page_title="Public Policy Cost Dashboard", layout="wide")
 st.markdown("""
 <style>
     html, body, [data-testid="stAppViewContainer"] {
-    height: 100vh;
-    width: 100vw;
+    height: 1000vh;
+    width: 1000vw;
     overflow: hidden !important;
     transform: scale(0.8);
     transform-origin: top left;
