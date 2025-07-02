@@ -13,33 +13,44 @@
         --radius:1rem;
         --gap:2rem;
         --max-width:1600px;
+        --thumb-size:14px;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     body,html{
         font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-        display:flex;flex-direction:column;align-items:center;min-height:100vh;gap:var(--gap);
+        min-height:100vh;display:flex;flex-direction:column;align-items:center;
+        padding:0 0 var(--gap); /* ensure footer total visible */
     }
-    h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;text-align:center;margin-top:1.2rem;}
-    .description{max-width:var(--max-width);text-align:center;color:#555;font-size:clamp(.9rem,1.1vw,1.1rem);line-height:1.4;padding:0 1rem;}
-    .grid{width:100%;max-width:var(--max-width);display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:var(--gap);padding:0 var(--gap);}    
-    .card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.8rem;display:flex;flex-direction:column;align-items:center;gap:1.4rem;}
+    h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;text-align:center;margin:1.2rem 0 .6rem;}
+    .description{max-width:var(--max-width);text-align:center;color:#555;font-size:clamp(.9rem,1.1vw,1.1rem);line-height:1.4;padding:0 1rem 1.4rem;}
+
+    /* GRID with centered orphan row */
+    .grid{width:100%;max-width:var(--max-width);display:flex;flex-wrap:wrap;justify-content:center;gap:var(--gap);padding:0 var(--gap);}    
+    .card{flex:1 1 360px;max-width:360px;background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);
+        padding:1.8rem;display:flex;flex-direction:column;align-items:center;gap:1.4rem;}
     .card h2{font-size:clamp(1rem,1.35vw,1.5rem);text-align:center;font-weight:700;}
 
-    /* slider wrapper */
-    .range-wrap{width:100%;position:relative;padding-top:2.2rem;} /* leaves space for value label */
-    input[type=range]{width:100%;cursor:pointer;margin:0;}
-    .value-float{position:absolute;top:0;font-weight:700;font-size:.95rem;transform:translateX(-50%);white-space:nowrap;}
+    /* slider wrapper & visuals */
+    .range-wrap{width:100%;position:relative;padding-top:2.4rem;} /* space for floating value */
+    input[type=range]{width:100%;cursor:pointer;margin:0;appearance:none;background:transparent;}
+    input[type=range]::-webkit-slider-thumb{appearance:none;width:var(--thumb-size);height:var(--thumb-size);border-radius:50%;background:#666;border:2px solid #fff;box-shadow:0 0 2px rgba(0,0,0,.35);} 
+    input[type=range]::-moz-range-thumb{width:var(--thumb-size);height:var(--thumb-size);border:none;border-radius:50%;background:#666;}
+
+    .value-float{position:absolute;top:0;font-weight:700;font-size:.95rem;transform:translateX(-50%);white-space:nowrap;pointer-events:none;transition:left .05s linear;} /* ensure instant follow */
     .range-labels{width:100%;display:flex;justify-content:space-between;font-size:.85rem;color:#555;margin-top:.3rem;}
 
     /* cost box */
-    .cost-text{font-size:clamp(1rem,1.3vw,1.4rem);background:var(--red-light);border:3px solid #ff4d4d;color:var(--red);padding:.6rem 1.2rem;border-radius:var(--radius);font-weight:600;text-align:center;}
+    .cost-text{font-size:clamp(1rem,1.3vw,1.4rem);background:var(--red-light);border:3px solid #ff4d4d;color:var(--red);padding:.6rem 1.2rem;border-radius:var(--radius);font-weight:600;text-align:center;min-width:200px;}
     .cost-number{display:block;margin-top:.2rem;}
 
     /* total */
-    .total-box{background:#fff3f3;border:3px solid #ffcccc;border-radius:var(--radius);padding:1rem 2rem;box-shadow:var(--shadow);margin-bottom:2rem;}
+    .total-box{background:#fff3f3;border:3px solid #ffcccc;border-radius:var(--radius);padding:1rem 2rem;box-shadow:var(--shadow);margin:var(--gap) 0 0;align-self:center;max-width:90%;}
     .total-text{font-size:clamp(1.4rem,2.5vw,2.8rem);font-weight:700;color:var(--red);text-align:center;}
 
-    @media(max-width:600px){.range-labels{font-size:.75rem;}}
+    @media(max-width:600px){
+        .range-labels{font-size:.75rem;}
+        .cost-text{min-width:unset;}
+    }
 </style>
 </head>
 <body>
@@ -67,51 +78,49 @@ function detectUnit(name){return name.includes('%')?'%':'';}
 
 const gridEl=document.getElementById('grid');
 const individualCosts={};
-
 function updateTotal(){const total=Object.values(individualCosts).reduce((a,b)=>a+b,0);document.getElementById('totalValue').textContent='$'+total.toLocaleString();}
 
-policies.forEach(p=>{
-    const {domain_min:min,domain_max:max,step}=p;
-    const unit=detectUnit(p.name);
+policies.forEach(p=>{createCard(p)});
+
+function createCard(p){
+    let {domain_min:min,domain_max:max,step}=p;const unit=detectUnit(p.name);
+    if(min>max){[min,max]=[max,min];}
+
     const minCost=evaluate(p.func,min);const maxCost=evaluate(p.func,max);
     const startVal=minCost===0?min:maxCost===0?max:min;
 
-    // card skeleton
+    // card elements
     const card=document.createElement('div');card.className='card';
     const title=document.createElement('h2');title.textContent=p.name;card.appendChild(title);
 
-    // range wrap
     const wrap=document.createElement('div');wrap.className='range-wrap';card.appendChild(wrap);
-
-    // floating value label
     const float=document.createElement('span');float.className='value-float';wrap.appendChild(float);
-
-    // slider
-    const slider=document.createElement('input');slider.type='range';slider.min=min;slider.max=max;slider.step=step;slider.value=startVal;wrap.appendChild(slider);
-
-    // endpoints
+    const slider=document.createElement('input');slider.type='range';Object.assign(slider,{min,max,step,value:startVal});wrap.appendChild(slider);
     const labels=document.createElement('div');labels.className='range-labels';labels.innerHTML=`<span>${min}${unit}</span><span>${max}${unit}</span>`;card.appendChild(labels);
+    const costBox=document.createElement('div');costBox.className='cost-text';card.appendChild(costBox);
 
-    // cost box
-    const costText=document.createElement('div');costText.className='cost-text';card.appendChild(costText);
-
+    // update layout on value or resize
     function refresh(val){
-        // update slider value label
-        const percent=(val-min)/(max-min);
-        float.style.left=`calc(${percent*100}% )`;
-        float.textContent=`${val}${unit}`;
-
-        // calculate cost
-        const costRaw=evaluate(p.func,Number(val));
-        const cost=roundCost(costRaw);
-        costText.innerHTML=`Estimated Cost:<span class="cost-number">$${cost.toLocaleString()}</span>`;
+        positionFloat(val);
+        const cost=roundCost(evaluate(p.func,val));
+        costBox.innerHTML=`Estimated Cost:<span class='cost-number'>$${cost.toLocaleString()}</span>`;
         individualCosts[p.name]=cost;updateTotal();
     }
 
+    function positionFloat(val){
+        const percent=(val-min)/(max-min);
+        const sliderW=slider.offsetWidth;
+        const thumb=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thumb-size'))||14;
+        const x=percent*(sliderW-thumb)+thumb/2; // center of thumb in px
+        float.style.left=x+'px';
+        float.textContent=`${val}${unit}`;
+    }
+
     slider.addEventListener('input',e=>refresh(Number(e.target.value)));
+    window.addEventListener('resize',()=>positionFloat(Number(slider.value)));
     refresh(startVal);
     gridEl.appendChild(card);
-});
+}
 </script>
 </body>
 </html>
