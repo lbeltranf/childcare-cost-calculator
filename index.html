@@ -13,30 +13,32 @@
         --radius:1rem;
         --gap:2rem;
         --max-width:1600px;
-        --thumb-size:14px;
+        --thumb-size:16px;
+        --track-height:6px;
+        --blue:#0d6efd;
+        --gray:#d3d3d3;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
-    body,html{
-        font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-        min-height:100vh;display:flex;flex-direction:column;align-items:center;
-        padding:0 0 var(--gap); /* ensure footer total visible */
-    }
+    body,html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 0 var(--gap);}
     h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:800;text-align:center;margin:1.2rem 0 .6rem;}
     .description{max-width:var(--max-width);text-align:center;color:#555;font-size:clamp(.9rem,1.1vw,1.1rem);line-height:1.4;padding:0 1rem 1.4rem;}
 
     /* GRID with centered orphan row */
     .grid{width:100%;max-width:var(--max-width);display:flex;flex-wrap:wrap;justify-content:center;gap:var(--gap);padding:0 var(--gap);}    
-    .card{flex:1 1 360px;max-width:360px;background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);
-        padding:1.8rem;display:flex;flex-direction:column;align-items:center;gap:1.4rem;}
+    .card{flex:1 1 360px;max-width:360px;background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);padding:1.8rem;display:flex;flex-direction:column;align-items:center;gap:1.6rem;}
     .card h2{font-size:clamp(1rem,1.35vw,1.5rem);text-align:center;font-weight:700;}
 
     /* slider wrapper & visuals */
     .range-wrap{width:100%;position:relative;padding-top:2.4rem;} /* space for floating value */
-    input[type=range]{width:100%;cursor:pointer;margin:0;appearance:none;background:transparent;}
-    input[type=range]::-webkit-slider-thumb{appearance:none;width:var(--thumb-size);height:var(--thumb-size);border-radius:50%;background:#666;border:2px solid #fff;box-shadow:0 0 2px rgba(0,0,0,.35);} 
+    input[type=range]{width:100%;cursor:pointer;margin:0;appearance:none;height:var(--track-height);border-radius:var(--track-height);background:var(--gray);background:linear-gradient(to right,var(--blue) 0 0) no-repeat var(--gray);} /* default gradient will be updated via inline style */
+
+    input[type=range]::-webkit-slider-runnable-track{height:var(--track-height);border-radius:var(--track-height);background:transparent;}
+    input[type=range]::-moz-range-track{height:var(--track-height);border-radius:var(--track-height);background:transparent;}
+
+    input[type=range]::-webkit-slider-thumb{appearance:none;width:var(--thumb-size);height:var(--thumb-size);border-radius:50%;background:#666;border:3px solid #fff;box-shadow:0 0 2px rgba(0,0,0,.35);margin-top:calc((var(--track-height) - var(--thumb-size))/2);} 
     input[type=range]::-moz-range-thumb{width:var(--thumb-size);height:var(--thumb-size);border:none;border-radius:50%;background:#666;}
 
-    .value-float{position:absolute;top:0;font-weight:700;font-size:.95rem;transform:translateX(-50%);white-space:nowrap;pointer-events:none;transition:left .05s linear;} /* ensure instant follow */
+    .value-float{position:absolute;top:0;font-weight:700;font-size:.95rem;transform:translateX(-50%);white-space:nowrap;pointer-events:none;transition:left .05s linear;} /* instant follow */
     .range-labels{width:100%;display:flex;justify-content:space-between;font-size:.85rem;color:#555;margin-top:.3rem;}
 
     /* cost box */
@@ -65,14 +67,12 @@
 const policies=[
   {name:"Increase Average Student Test Scores (NAEP scale)",domain_min:250,domain_max:300,step:1,func:"1500000 * ((x - 250) ** 2)"},
   {name:"Reduce Adult Recidivism Rate (%)",domain_min:10,domain_max:40,step:1,func:"3000000 * (40 - x) ** 1.5"},
-  {name:"Expand Broadband Access (% of rural population)",domain_min:50,domain_max:100,step:5,func:"5000000 * math.log1p(x - 50)"},
+  {name:"Expand Broadband Access (% of rural population)",domain_min:50,domain_max:100,step:5,func:"5000000 * Math.log1p(x - 50)"},
   {name:"Increase Vaccination Rate (% population)",domain_min:70,domain_max:95,step:1,func:"2000000 * ((x - 70) ** 1.8)"},
   {name:"Improve Air Quality Index (AQI reduction)",domain_min:0,domain_max:30,step:1,func:"1000000 * (x ** 2)"}
 ];
 
-// Helpers
-function jsExpr(expr){return expr.replace(/math\./gi,'Math.');}
-function evaluate(expr,x){return Function('x','Math',`return ${jsExpr(expr)};`)(x,Math);}  // quick eval
+function evaluate(expr,x){return Function('x',`return ${expr};`)(x);}  // fast inline evaluator
 function roundCost(v){return Math.round(v/100000)*100000;}
 function detectUnit(name){return name.includes('%')?'%':'';}
 
@@ -89,7 +89,6 @@ function createCard(p){
     const minCost=evaluate(p.func,min);const maxCost=evaluate(p.func,max);
     const startVal=minCost===0?min:maxCost===0?max:min;
 
-    // card elements
     const card=document.createElement('div');card.className='card';
     const title=document.createElement('h2');title.textContent=p.name;card.appendChild(title);
 
@@ -99,25 +98,31 @@ function createCard(p){
     const labels=document.createElement('div');labels.className='range-labels';labels.innerHTML=`<span>${min}${unit}</span><span>${max}${unit}</span>`;card.appendChild(labels);
     const costBox=document.createElement('div');costBox.className='cost-text';card.appendChild(costBox);
 
-    // update layout on value or resize
+    // calc % and apply gradient
+    function setGradient(val){
+        const percent=(val-min)/(max-min)*100;
+        slider.style.background=`linear-gradient(to right,var(--blue) 0%,var(--blue) ${percent}%,var(--gray) ${percent}%,var(--gray) 100%)`;
+    }
+
+    function positionFloat(val){
+        const percent=(val-min)/(max-min);
+        const sliderRect=slider.getBoundingClientRect();
+        const thumb=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thumb-size'))||16;
+        const x=percent*(sliderRect.width-thumb)+thumb/2; // thumb center
+        float.style.left=x+'px';
+        float.textContent=`${val}${unit}`;
+    }
+
     function refresh(val){
         positionFloat(val);
+        setGradient(val);
         const cost=roundCost(evaluate(p.func,val));
         costBox.innerHTML=`Estimated Cost:<span class='cost-number'>$${cost.toLocaleString()}</span>`;
         individualCosts[p.name]=cost;updateTotal();
     }
 
-    function positionFloat(val){
-        const percent=(val-min)/(max-min);
-        const sliderW=slider.offsetWidth;
-        const thumb=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--thumb-size'))||14;
-        const x=percent*(sliderW-thumb)+thumb/2; // center of thumb in px
-        float.style.left=x+'px';
-        float.textContent=`${val}${unit}`;
-    }
-
     slider.addEventListener('input',e=>refresh(Number(e.target.value)));
-    window.addEventListener('resize',()=>positionFloat(Number(slider.value)));
+    window.addEventListener('resize',()=>{positionFloat(Number(slider.value));});
     refresh(startVal);
     gridEl.appendChild(card);
 }
