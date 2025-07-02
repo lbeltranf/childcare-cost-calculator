@@ -28,15 +28,18 @@ st.markdown("""
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        justify-content: start !important;
+        justify-content: space-between !important;
     }
 
     .main > div {
-        height: 100% !important;
-        width: 100% !important;
+        height: 100vh !important;
+        width: 100vw !important;
         overflow: hidden !important;
-        padding: 2% !important;
+        padding: 2vh 2vw !important;
         box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-evenly !important;
     }
 
     header > div:first-child, .stDeployButton, .st-emotion-cache-1wbqy5l,
@@ -47,33 +50,29 @@ st.markdown("""
     h1 {
         font-size: 3vw !important;
         font-weight: 800 !important;
-        margin-bottom: 1% !important;
+        margin: 0 0 1vh 0 !important;
     }
 
     .description-text {
         font-size: 1.2vw;
         line-height: 1.4;
         color: #444;
-        margin-bottom: 2%;
-    }
-
-    hr {
-        margin: 1% 0 !important;
+        margin-bottom: 1vh;
     }
 
     .policy-section {
         background-color: #f9f9f9;
-        padding: 2%;
-        border-radius: 2%;
-        box-shadow: 0 0.2% 0.8% rgba(0, 0, 0, 0.05);
+        padding: 2vh 2vw;
+        border-radius: 1vw;
+        box-shadow: 0 0.5vh 1.5vh rgba(0, 0, 0, 0.05);
         text-align: center;
-        margin-bottom: 2%;
+        margin: 1vh 0;
     }
 
     .policy-title {
         font-size: 1.6vw;
         font-weight: 600;
-        margin-bottom: 1%;
+        margin-bottom: 1vh;
     }
 
     .cost-text {
@@ -81,21 +80,20 @@ st.markdown("""
         background-color: #ffecec;
         border: 0.2vw solid #ff4d4d;
         color: #a00000;
-        padding: 1% 2%;
+        padding: 1vh 2vw;
         border-radius: 1vw;
         font-weight: 600;
         display: inline-block;
-        margin-top: 1%;
+        margin-top: 1vh;
     }
 
     .total-box {
         background-color: #fff3f3;
-        padding: 2%;
-        border-radius: 2%;
+        padding: 2vh 2vw;
+        border-radius: 1vw;
         border: 0.2vw solid #ffcccc;
         text-align: center;
-        box-shadow: 0 0.4% 1.6% rgba(0, 0, 0, 0.1);
-        margin-bottom: 2% !important;
+        box-shadow: 0 0.5vh 1.5vh rgba(0, 0, 0, 0.1);
     }
 
     .total-text {
@@ -105,12 +103,11 @@ st.markdown("""
     }
 
     .stSlider > div[data-baseweb="slider"] {
-        padding-top: 1%;
-        padding-bottom: 1%;
+        padding: 1vh 0;
     }
 
     .stSlider .css-14e1a1c {
-        height: 2.5vw !important;
+        height: 2.5vh !important;
     }
 
     .stSlider .css-1c5i8h5 {
@@ -139,8 +136,6 @@ st.markdown("""
     Each change dynamically updates the estimated government expenditure.
 </div>
 """, unsafe_allow_html=True)
-
-st.markdown("---")
 
 cols = st.columns(2)
 individual_costs = {}
@@ -190,8 +185,6 @@ for i, policy in enumerate(policies):
                 unsafe_allow_html=True
             )
             st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("---")
 
 total_cost = sum(individual_costs.values())
 
