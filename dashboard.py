@@ -25,21 +25,16 @@ st.markdown("""
         padding: 0 !important;
         margin: 0 !important;
         box-sizing: border-box !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: space-between !important;
     }
 
     .main > div {
-        height: 100vh !important;
-        width: 100vw !important;
-        overflow: hidden !important;
+        display: grid !important;
+        grid-template-rows: auto auto 1fr auto !important;
+        row-gap: 2vh !important;
         padding: 2vh 2vw !important;
+        height: 100vh !important;
+        overflow: hidden !important;
         box-sizing: border-box !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: space-evenly !important;
     }
 
     header > div:first-child, .stDeployButton, .st-emotion-cache-1wbqy5l,
@@ -57,16 +52,26 @@ st.markdown("""
         font-size: 1.2vw;
         line-height: 1.4;
         color: #444;
-        margin-bottom: 1vh;
+    }
+
+    .slider-section {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: start;
+        height: 60vh;
+        overflow: auto;
+        row-gap: 2vh;
+        column-gap: 2vw;
     }
 
     .policy-section {
+        flex: 0 1 48%;
         background-color: #f9f9f9;
         padding: 2vh 2vw;
         border-radius: 1vw;
         box-shadow: 0 0.5vh 1.5vh rgba(0, 0, 0, 0.05);
         text-align: center;
-        margin: 1vh 0;
     }
 
     .policy-title {
@@ -122,8 +127,11 @@ st.markdown("""
         box-shadow: 0 0 0 0.3vw rgba(210, 34, 34, 0.2);
     }
 
-    div[data-testid="column"] {
-        height: fit-content !important;
+    *::-webkit-scrollbar {
+        display: none;
+    }
+    * {
+        scrollbar-width: none;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -137,54 +145,52 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-cols = st.columns(2)
+st.markdown("<div class='slider-section'>", unsafe_allow_html=True)
 individual_costs = {}
 
 for i, policy in enumerate(policies):
-    col = cols[i % 2]
+    domain_min = policy["domain_min"]
+    domain_max = policy["domain_max"]
+    step = policy["step"]
 
-    with col:
-        domain_min = policy["domain_min"]
-        domain_max = policy["domain_max"]
-        step = policy["step"]
+    min_cost = evaluate_function(policy["function"], domain_min)
+    max_cost = evaluate_function(policy["function"], domain_max)
 
-        min_cost = evaluate_function(policy["function"], domain_min)
-        max_cost = evaluate_function(policy["function"], domain_max)
+    if min_cost == 0:
+        start_val = domain_min
+    elif max_cost == 0:
+        start_val = domain_max
+    else:
+        start_val = domain_min
 
-        if min_cost == 0:
-            start_val = domain_min
-        elif max_cost == 0:
-            start_val = domain_max
-        else:
-            start_val = domain_min
+    if domain_min > domain_max:
+        domain_min, domain_max = domain_max, domain_min
+        step = abs(step)
 
-        if domain_min > domain_max:
-            domain_min, domain_max = domain_max, domain_min
-            step = abs(step)
+    st.markdown("<div class='policy-section'>", unsafe_allow_html=True)
+    st.markdown(f"<div class='policy-title'>{policy['name']}</div>", unsafe_allow_html=True)
 
-        with st.container():
-            st.markdown("<div class='policy-section'>", unsafe_allow_html=True)
-            st.markdown(f"<div class='policy-title'>{policy['name']}</div>", unsafe_allow_html=True)
+    val = st.slider(
+        label="",
+        min_value=domain_min,
+        max_value=domain_max,
+        step=step,
+        value=start_val,
+        key=f"slider_{i}",
+        label_visibility="collapsed"
+    )
 
-            val = st.slider(
-                label="",
-                min_value=domain_min,
-                max_value=domain_max,
-                step=step,
-                value=start_val,
-                key=f"slider_{i}",
-                label_visibility="collapsed"
-            )
+    cost = evaluate_function(policy["function"], val)
+    rounded_cost = round_cost(cost)
+    individual_costs[policy["name"]] = rounded_cost
 
-            cost = evaluate_function(policy["function"], val)
-            rounded_cost = round_cost(cost)
-            individual_costs[policy["name"]] = rounded_cost
+    st.markdown(
+        f"<div class='cost-text'>Estimated Cost: <b>${rounded_cost:,.0f}</b></div>",
+        unsafe_allow_html=True
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
 
-            st.markdown(
-                f"<div class='cost-text'>Estimated Cost: <b>${rounded_cost:,.0f}</b></div>",
-                unsafe_allow_html=True
-            )
-            st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
 total_cost = sum(individual_costs.values())
 
