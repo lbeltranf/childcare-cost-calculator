@@ -25,14 +25,17 @@ st.markdown("""
         padding: 0 !important;
         margin: 0 !important;
         box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: start !important;
     }
 
     .main > div {
-        height: 100vh !important;
+        height: 100% !important;
+        width: 100% !important;
         overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
-        padding: 1% !important;
+        padding: 2% !important;
         box-sizing: border-box !important;
     }
 
@@ -45,7 +48,6 @@ st.markdown("""
         font-size: 3vw !important;
         font-weight: 800 !important;
         margin-bottom: 1% !important;
-        flex-shrink: 0 !important;
     }
 
     .description-text {
@@ -53,41 +55,34 @@ st.markdown("""
         line-height: 1.4;
         color: #444;
         margin-bottom: 2%;
-        flex-shrink: 0;
     }
 
     hr {
         margin: 1% 0 !important;
-        flex-shrink: 0 !important;
     }
 
     .policy-section {
         background-color: #f9f9f9;
         padding: 2%;
-        border-radius: 1%;
-        box-shadow: 0 0.1% 0.4% rgba(0, 0, 0, 0.05);
+        border-radius: 2%;
+        box-shadow: 0 0.2% 0.8% rgba(0, 0, 0, 0.05);
         text-align: center;
-        position: relative;
-        top: 3%;
-        height: fit-content;
         margin-bottom: 2%;
     }
 
     .policy-title {
-        font-size: 1.5vw;
+        font-size: 1.6vw;
         font-weight: 600;
-        margin-bottom: 2%;
+        margin-bottom: 1%;
     }
 
     .cost-text {
-        position: relative;
-        top: -1.5%;
         font-size: 1.6vw;
         background-color: #ffecec;
         border: 0.2vw solid #ff4d4d;
         color: #a00000;
         padding: 1% 2%;
-        border-radius: 1%;
+        border-radius: 1vw;
         font-weight: 600;
         display: inline-block;
         margin-top: 1%;
@@ -95,13 +90,12 @@ st.markdown("""
 
     .total-box {
         background-color: #fff3f3;
-        padding: 3%;
+        padding: 2%;
         border-radius: 2%;
         border: 0.2vw solid #ffcccc;
         text-align: center;
-        box-shadow: 0 0.2vw 0.8vw rgba(0, 0, 0, 0.1);
-        margin-bottom: 0 !important;
-        flex-shrink: 0 !important;
+        box-shadow: 0 0.4% 1.6% rgba(0, 0, 0, 0.1);
+        margin-bottom: 2% !important;
     }
 
     .total-text {
@@ -111,24 +105,24 @@ st.markdown("""
     }
 
     .stSlider > div[data-baseweb="slider"] {
-        padding-top: 1.2%;
-        padding-bottom: 1.2%;
+        padding-top: 1%;
+        padding-bottom: 1%;
     }
 
     .stSlider .css-14e1a1c {
-        height: 3% !important;
+        height: 2.5vw !important;
     }
 
     .stSlider .css-1c5i8h5 {
-        width: 1.5vw !important;
-        height: 1.5vw !important;
+        width: 1.2vw !important;
+        height: 1.2vw !important;
         border-radius: 50% !important;
         background-color: #d22 !important;
-        box-shadow: 0 0.1vw 0.4vw rgba(0,0,0,0.2);
+        box-shadow: 0 0.2vw 0.8vw rgba(0,0,0,0.2);
     }
 
     .stSlider .css-1c5i8h5:hover {
-        box-shadow: 0 0 0 0.4vw rgba(210, 34, 34, 0.2);
+        box-shadow: 0 0 0 0.3vw rgba(210, 34, 34, 0.2);
     }
 
     div[data-testid="column"] {
